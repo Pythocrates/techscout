@@ -17,6 +17,7 @@ NEWSPIDER_MODULE = 'techscout.spiders'
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'techscout (+http://www.yourdomain.com)'
+USER_AGENT = 'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)'
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = True
@@ -64,9 +65,11 @@ ROBOTSTXT_OBEY = True
 
 # Configure item pipelines
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
+ITEM_PIPELINES = {
+    'techscout.pipelines.PPTXItemPipeline': 100,
 #    'techscout.pipelines.TechscoutPipeline': 300,
-#}
+}
+PPTX_FILE_NAME = 'report.pptx'
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://doc.scrapy.org/en/latest/topics/autothrottle.html

@@ -4,6 +4,10 @@ import scrapy
 
 
 class EngadgetSpider(scrapy.Spider):
+    def __init__(self, follow_pages=None, *args, **kwargs):
+        super(EngadgetSpider, self).__init__(*args, **kwargs)
+        self.__pages_left = follow_pages if follow_pages != None else -1
+
     name = "engadget"
     next_page_selector =\
         'body > div.o-h > div > div div.table-cell > a.o-btn::attr(href)'
@@ -18,7 +22,9 @@ class EngadgetSpider(scrapy.Spider):
     def parse(self, response):
         # Link to the next page.
         for href in response.css(self.next_page_selector):
-            yield response.follow(href, self.parse)
+            if self.__pages_left != 0:
+                self.__pages_left -= 1
+                yield response.follow(href, self.parse)
 
         # Links to the articles.
         # Top article.

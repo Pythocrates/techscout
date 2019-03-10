@@ -83,7 +83,7 @@ pandas==0.23.3
 parsel==1.5.1
 patsy==0.4.1+dev
 pbr==5.1.1
-Pillow==5.2.0
+Pillow==5.4.1
 pluggy==0.6.0
 prettytable==0.7.2
 py==1.6.0
@@ -107,6 +107,7 @@ pyparsing==2.2.0
 pyserial==3.4
 pytest==3.6.4
 python-dateutil==2.6.1
+python-pptx==0.6.17
 pytz==2018.5
 pyusb==1.0.2
 pyxdg==0.25
@@ -141,5 +142,6 @@ WTForms==2.1
 wxPython==3.0.2.0
 wxPython-common==3.0.2.0
 xlrd==1.1.0
+XlsxWriter==1.1.5
 xlwt==1.3.0
 zope.interface==4.6.0

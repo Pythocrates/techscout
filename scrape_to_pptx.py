@@ -9,5 +9,5 @@ from techscout.spiders.engadget_spider import EngadgetSpider
 if __name__ == '__main__':
     crawler = CrawlerProcess(get_project_settings())
 
-    crawler.crawl(EngadgetSpider, follow_pages=0)
+    crawler.crawl(EngadgetSpider, follow_pages=-1)
     crawler.start()

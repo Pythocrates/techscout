@@ -46,10 +46,12 @@ class EngadgetSpider(scrapy.Spider):
         tags = response.css('meta[property="article:tag"]::attr(content)').getall()
         title = response.css('meta[property="og:title"]::attr(content)').getall()
         text = response.css('.article-text > p *::text').getall()
+        img_src = response.css('#page_body > div div > figure > img::attr(src)').get()
         yield dict(
             post_id=post_id,
             tags=tags,
             url=response.url,
             title=title,
             text=text,
+            image_urls=[img_src],
         )

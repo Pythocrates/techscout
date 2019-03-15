@@ -66,10 +66,12 @@ ROBOTSTXT_OBEY = True
 # Configure item pipelines
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
+    'scrapy.pipelines.images.ImagesPipeline': 50,
     'techscout.pipelines.PPTXItemPipeline': 100,
 #    'techscout.pipelines.TechscoutPipeline': 300,
 }
 PPTX_FILE_NAME = 'report.pptx'
+IMAGES_STORE = 'images'
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://doc.scrapy.org/en/latest/topics/autothrottle.html

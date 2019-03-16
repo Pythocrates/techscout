@@ -4,19 +4,18 @@ import scrapy
 
 
 class EngadgetSpider(scrapy.Spider):
-    def __init__(self, follow_pages=None, *args, **kwargs):
-        super(EngadgetSpider, self).__init__(*args, **kwargs)
-        self.__pages_left = follow_pages if follow_pages != None else -1
-
     name = "engadget"
     next_page_selector =\
         'body > div.o-h > div > div div.table-cell > a.o-btn::attr(href)'
 
+    def __init__(self, follow_pages=None, categories=None, *args, **kwargs):
+        super(EngadgetSpider, self).__init__(*args, **kwargs)
+        self.__pages_left = follow_pages if follow_pages is not None else -1
+        self.__categories = categories or list()
+
     def start_requests(self):
-        urls = [
-            'https://www.engadget.com/topics/tomorrow/',
-        ]
-        for url in urls:
+        for category in self.__categories:
+            url = 'https://www.engadget.com/topics/{c}/'.format(c=category)
             yield scrapy.Request(url=url, callback=self.parse)
 
     def parse(self, response):

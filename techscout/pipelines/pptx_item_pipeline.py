@@ -1,4 +1,5 @@
 import os
+import re
 
 from pptx import Presentation
 from pptx.enum.text import MSO_AUTO_SIZE
@@ -38,8 +39,7 @@ class PPTXItemPipeline(object):
         parser = PlaintextParser.from_string(text, Tokenizer('english'))
         summarizer = LexRankSummarizer()
         sentences = summarizer(parser.document, 4)
-        text = ' '.join(str(s) for s in sentences)
-        tf.text = text
+        tf.text = re.sub(r' +', ' ', ' '.join(str(s) for s in sentences))
         tf.paragraphs[0].runs[0].font.size = Pt(10)
         tf.margin_left = 0
         tf.word_wrap = True
@@ -49,10 +49,13 @@ class PPTXItemPipeline(object):
         tags_box = slide.shapes.add_textbox(left, top, width, height)
         tf = tags_box.text_frame
         tags = item['tags']
-        tf.text = ', '.join(tags).replace('  ', ' ')
-        tf.paragraphs[0].runs[0].font.size = Pt(8)
+        tf.text = 'URL: {u}'.format(u=item['url'])
+        tf.add_paragraph().text = ', '.join(tags)
         tf.word_wrap = True
         tf.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
+
+        for paragraph in tf.paragraphs:
+            paragraph.runs[0].font.size = Pt(8)
 
         image_path = item['images'][0]['path']
         slide.shapes.add_picture(

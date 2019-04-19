@@ -23,9 +23,69 @@ class PPTXItemPipeline(object):
         self.__presentation = Presentation()
 
     def close_spider(self, spider):
+        tag_data = sorted(
+            (
+                (k[5:], v) for (k, v) in
+                spider.crawler.stats.get_stats().iteritems()
+                if k.startswith('tags/')
+            ),
+            key=lambda x: x[1],
+            reverse=True,
+        )
+
+        # Take only the most frequent tags.
+        tag_data = tag_data[:15]
+
+        import matplotlib.pyplot as plt
+        plt.pie(
+            x=[v for (k, v) in tag_data],
+            labels=[k for (k, v) in tag_data],
+            startangle=140,
+        )
+        plt.axis('equal')
+        plt.savefig('cake.png', bbox_inches='tight')
+
+        # Add the cake diagram.
+        blank_slide_layout = self.__presentation.slide_layouts[5]
+        slide = self.__presentation.slides.add_slide(blank_slide_layout)
+        slide.shapes.title.text = 'Most Frequent Tags'
+        slide.shapes.title.text_frame.paragraphs[0].runs[0].font.size = Pt(20)
+
+        from pptx.chart.data import ChartData
+        from pptx.enum.chart import XL_CHART_TYPE, XL_LABEL_POSITION, XL_LEGEND_POSITION
+        chart_data = ChartData()
+        chart_data.categories =  [k for (k, v) in tag_data]
+        chart_data.add_series('Series 1', [v for (k, v) in tag_data])
+
+        x, y, cx, cy = Inches(1), Inches(2), Inches(8), Inches(6.5)
+        chart = slide.shapes.add_chart(
+            XL_CHART_TYPE.PIE, x, y, cx, cy, chart_data
+        ).chart
+
+        chart.has_legend = True
+        chart.legend.position = XL_LEGEND_POSITION.BOTTOM
+        chart.legend.include_in_layout = False
+
+        chart.plots[0].has_data_labels = True
+        data_labels = chart.plots[0].data_labels
+        data_labels.number_format = '0'
+        data_labels.position = XL_LABEL_POSITION.OUTSIDE_END
+
+
         self.__presentation.save(self.__file_name)
 
     def process_item(self, item, spider):
+        # Prepare an article summary.
+        text = ' '.join(item['text'])
+        parser = PlaintextParser.from_string(text, Tokenizer('english'))
+        summarizer = LexRankSummarizer()
+        sentences = summarizer(parser.document, 4)
+        summary = re.sub(r' +', ' ', ' '.join(str(s) for s in sentences))
+
+        # Collect tags statistics.
+        for tag in item['tags']:
+            spider.crawler.stats.inc_value('tags/{t}'.format(t=tag))
+
         blank_slide_layout = self.__presentation.slide_layouts[5]
         slide = self.__presentation.slides.add_slide(blank_slide_layout)
         slide.shapes.title.text = ''.join(item['title'])
@@ -35,11 +95,7 @@ class PPTXItemPipeline(object):
         txBox = slide.shapes.add_textbox(left, top, width, height)
         tf = txBox.text_frame
 
-        text = ' '.join(item['text'])
-        parser = PlaintextParser.from_string(text, Tokenizer('english'))
-        summarizer = LexRankSummarizer()
-        sentences = summarizer(parser.document, 4)
-        tf.text = re.sub(r' +', ' ', ' '.join(str(s) for s in sentences))
+        tf.text = summary
         tf.paragraphs[0].runs[0].font.size = Pt(10)
         tf.margin_left = 0
         tf.word_wrap = True

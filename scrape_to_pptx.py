@@ -7,10 +7,10 @@ from techscout.spiders.engadget_spider import EngadgetSpider
 
 
 if __name__ == '__main__':
-    crawler = CrawlerProcess(get_project_settings())
+    crawler_process = CrawlerProcess(get_project_settings())
 
-    crawler.crawl(
+    crawler_process.crawl(
         EngadgetSpider,
-        follow_pages=0,
+        follow_pages=-1,
         categories=['gear', 'gaming', 'entertainment', 'tomorrow'])
-    crawler.start()
+    crawler_process.start()

@@ -1,4 +1,4 @@
 Pillow==9.0.0
 python-pptx==0.6.17
-Scrapy==1.8.2
+Scrapy==2.6.2
 sumy==0.7.0
